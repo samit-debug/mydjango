@@ -187,13 +187,18 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_STORAGE_BACKEND = os.getenv(
+    'STATICFILES_STORAGE_BACKEND',
+    'whitenoise.storage.CompressedStaticFilesStorage',
+)
+WHITENOISE_USE_FINDERS = os.getenv('WHITENOISE_USE_FINDERS', str(not DEBUG)).lower() in {'1', 'true', 'yes', 'on'}
 
 STORAGES = {
     'default': {
         'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
     'staticfiles': {
-        'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
+        'BACKEND': STATICFILES_STORAGE_BACKEND,
     },
 }
 
