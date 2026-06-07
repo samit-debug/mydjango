@@ -1,0 +1,49 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Login{% endblock %}
+
+{% block content %}
+<section class="auth-shell">
+    <div class="auth-copy">
+        <p class="eyebrow">Welcome back</p>
+        <h1>Log in to Hiti Library and Study Center</h1>
+        <p>Apna member account open karo, books search karo, aur issued records manage karo.</p>
+        <div class="auth-highlights">
+            <span>Secure Django session</span>
+            <span>Book issue tracking</span>
+            <span>Reservations ready</span>
+        </div>
+    </div>
+    <form class="auth-card" method="post">
+        {% csrf_token %}
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="form-message {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        <label>
+            Email or username
+            <input type="text" name="identifier" autocomplete="username" required>
+        </label>
+        <label>
+            Password
+            <span class="password-field">
+                <input type="password" name="password" autocomplete="current-password" required data-password-input>
+                <button type="button" data-password-toggle>Show</button>
+            </span>
+        </label>
+        <div class="auth-options">
+            <label class="check-row">
+                <input type="checkbox" name="remember">
+                Remember me
+            </label>
+            <a href="{% url 'contact' %}">Forgot password?</a>
+        </div>
+        <button class="button primary auth-submit" type="submit">Log In</button>
+        <p class="auth-switch">No account? <a href="{% url 'signup' %}">Create member account</a></p>
+    </form>
+</section>
+{% endblock %}

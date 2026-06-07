@@ -1,0 +1,46 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Sign Up{% endblock %}
+
+{% block content %}
+<section class="auth-shell signup-shell">
+    <div class="auth-copy">
+        <p class="eyebrow">Start free</p>
+        <h1>Create your account</h1>
+        <p>Hiti Library and Study Center me member account banao aur books borrow, reserve, return track karo.</p>
+        <div class="auth-highlights">
+            <span>Member ID</span>
+            <span>Book catalog</span>
+            <span>Loan history</span>
+        </div>
+    </div>
+    <form class="auth-card" method="post">
+        {% csrf_token %}
+        {% if next %}
+            <input type="hidden" name="next" value="{{ next }}">
+        {% endif %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="form-message {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        <label>
+            Full name
+            <input type="text" name="name" autocomplete="name" required>
+        </label>
+        <label>
+            Email
+            <input type="email" name="email" autocomplete="email" required>
+        </label>
+        <label>
+            Password
+            <span class="password-field">
+                <input type="password" name="password" autocomplete="new-password" required data-password-input>
+                <button type="button" data-password-toggle>Show</button>
+            </span>
+        </label>
+        <button class="button primary auth-submit" type="submit">Create Account</button>
+        <p class="auth-switch">Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+    </form>
+</section>
+{% endblock %}

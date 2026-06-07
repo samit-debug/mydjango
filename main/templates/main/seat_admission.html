@@ -1,0 +1,61 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Seat Admission{% endblock %}
+
+{% block content %}
+<section class="profile-shell admission-shell">
+    <div>
+        <p class="eyebrow">Student admission</p>
+        <h1>Seat {{ seat.seat_number }}</h1>
+        <p>{{ seat.section }} ke liye student details, photo, payment proof, join date, month-end tracking, aur monthly alert setting save hogi. Online admission admin approval ke baad active hoga.</p>
+        <div class="facility-stats compact-stats">
+            <article>
+                <strong>{{ seat.seat_number }}</strong>
+                <span>seat number</span>
+            </article>
+            <article>
+                <strong>Today</strong>
+                <span>joining date</span>
+            </article>
+        </div>
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>Pay fees</h2>
+                <span>{{ profile.upi_id|default:"UPI/QR" }}</span>
+            </div>
+            <div class="payment-help-grid">
+                <div>
+                    <p class="muted">{{ profile.payment_note|default:"QR code se payment karke transaction ID ya screenshot upload karein. Admin approve karega tab seat active hogi." }}</p>
+                    <a class="button secondary" href="{% url 'support' %}">Payment Support</a>
+                </div>
+                <div class="qr-preview">
+                    {% if profile.payment_qr %}
+                        <img src="{{ profile.payment_qr.url }}" alt="Payment QR code">
+                    {% else %}
+                        <span>QR</span>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <form class="contact-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if form.non_field_errors %}
+            <p class="form-message error">{{ form.non_field_errors|join:", " }}</p>
+        {% endif %}
+
+        {% for field in form %}
+            <label>
+                {{ field.label }}
+                {{ field }}
+                {% for error in field.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </label>
+        {% endfor %}
+
+        <button type="submit">Save Admission</button>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,163 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Home{% endblock %}
+
+{% block content %}
+<section class="hiti-hero" style="--hiti-primary: {{ profile.primary_color|default:'#075f46' }}; --hiti-accent: {{ profile.accent_color|default:'#f7c948' }};">
+    <div class="hiti-hero-copy">
+        <p class="eyebrow">Library & Study Center</p>
+        <h1>{{ profile.name|default:"Hiti Library and Study Center" }}</h1>
+        <p>
+            {{ profile.tagline|default:"Focused reading space, library books, study seats, member dashboard, and librarian support." }}
+        </p>
+        <div class="hero-actions">
+            {% if user.is_authenticated %}
+                <a class="button primary" href="{% url 'dashboard' %}">Open Dashboard</a>
+            {% else %}
+                <a class="button primary" href="{% url 'signup' %}">Join as Member</a>
+            {% endif %}
+            <a class="button secondary" href="{% url 'study_center' %}">View Study Seats</a>
+        </div>
+        <div class="hero-proof">
+            <span><strong>{{ total_books }}</strong> books</span>
+            <span><strong>{{ available_books }}</strong> available</span>
+            <span><strong>{{ available_seats }}</strong> seats</span>
+        </div>
+    </div>
+    <div class="hiti-location-card">
+        <div class="map-frame">
+            {% if profile.map_embed_url %}
+                <iframe src="{{ profile.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Hiti Library and Study Center map"></iframe>
+            {% else %}
+                <div class="map-placeholder">Map</div>
+            {% endif %}
+        </div>
+        <div class="location-details">
+            <h2>Visit us</h2>
+            <p>{{ profile.address|default:"Exact location Google Maps par linked hai." }}</p>
+            <p><strong>Timing:</strong> {{ profile.opening_hours|default:"Open daily for focused study" }}</p>
+            {% if profile.weekly_off %}
+                <p><strong>Weekly off:</strong> {{ profile.weekly_off }}</p>
+            {% endif %}
+            <div class="hero-actions">
+                {% if profile.google_maps_url %}
+                    <a class="button primary" href="{{ profile.google_maps_url }}" target="_blank" rel="noopener">Open Google Maps</a>
+                {% endif %}
+                <a class="button secondary" href="{% url 'contact' %}">Ask Librarian</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="logo-strip" aria-label="Library highlights">
+    <span>Quiet Study Zone</span>
+    <span>Book Issue & Return</span>
+    <span>Seat Booking</span>
+    <span>Google Maps Linked</span>
+</section>
+
+<section class="section" id="facilities">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">Facilities</p>
+            <h2>Everything students expect</h2>
+        </div>
+        <p>Facilities live records se aati hain. Har card open hota hai aur next action deta hai.</p>
+    </div>
+    <div class="service-grid">
+        {% for item in facility_cards %}
+            <a class="service-card service-link-card" href="{% url 'facility_detail' item.facility.id %}">
+                <span class="service-icon">{{ item.facility.icon_label|default:forloop.counter }}</span>
+                <h3>{{ item.facility.name }}</h3>
+                <p>{{ item.facility.description }}</p>
+                <strong>{{ item.action.label }}</strong>
+            </a>
+        {% empty %}
+            <article class="service-card">
+                <span class="service-icon">01</span>
+                <h3>Focused Reading</h3>
+                <p>Quiet and comfortable study environment.</p>
+            </article>
+        {% endfor %}
+    </div>
+    <div class="section-actions">
+        <a class="button secondary" href="{% url 'facilities' %}">View All Facilities</a>
+    </div>
+</section>
+
+<section class="plans-band" id="plans">
+    <div>
+        <p class="eyebrow">Study plans</p>
+        <h2>Seats and membership plans</h2>
+        <p>Admin panel se price, duration, aur plan details edit kar sakte ho.</p>
+    </div>
+    <div class="plan-grid">
+        {% for plan in plans %}
+            <article class="plan-card {% if plan.is_featured %}featured{% endif %}">
+                <h3>{{ plan.name }}</h3>
+                <strong>Rs {{ plan.price }}</strong>
+                <p>{{ plan.duration }} &middot; {{ plan.description }}</p>
+                <a class="button secondary" href="{% url 'study_center' %}#seats">Book Seat</a>
+            </article>
+        {% empty %}
+            <article class="plan-card featured">
+                <h3>Monthly Study Seat</h3>
+                <strong>Contact</strong>
+                <p>Plan details admin panel se add karo.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="showcase-band">
+    <div>
+        <p class="eyebrow">Member system</p>
+        <h2>Books, seats, reservations, and records</h2>
+        <p>
+            Members catalog browse kar sakte hain, books issue/return kar sakte hain,
+            unavailable books reserve kar sakte hain, aur study seat book kar sakte hain.
+        </p>
+        <a class="button primary" href="{% url 'books' %}">Browse Catalog</a>
+    </div>
+    <div class="product-preview" aria-label="Library dashboard preview">
+        <div class="preview-topbar">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+        <div class="preview-body">
+            <div class="preview-panel">
+                <small>Books</small>
+                <strong>{{ total_books }}</strong>
+                <span>catalog records</span>
+            </div>
+            <div class="preview-panel accent">
+                <small>Seats</small>
+                <strong>{{ available_seats }}</strong>
+                <span>available now</span>
+            </div>
+            <div class="preview-chart">
+                <span style="height: 44%"></span>
+                <span style="height: 68%"></span>
+                <span style="height: 38%"></span>
+                <span style="height: 82%"></span>
+                <span style="height: 56%"></span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="testimonial-band">
+    <div>
+        <p class="eyebrow">Notices</p>
+        {% for notice in notices %}
+            <blockquote>{{ notice.title }}</blockquote>
+            <p>{{ notice.body }}</p>
+        {% empty %}
+            <blockquote>Welcome to Hiti Library and Study Center</blockquote>
+            <p>Notices admin panel se add kar sakte ho.</p>
+        {% endfor %}
+    </div>
+    <a class="button primary" href="{% url 'contact' %}">Contact Help Desk</a>
+</section>
+{% endblock %}

@@ -1,0 +1,80 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Services{% endblock %}
+
+{% block content %}
+<section class="page-hero compact">
+    <p class="eyebrow">Library services</p>
+    <h1>Everything needed for library management</h1>
+    <p>Catalog, member accounts, study seats, issue-return tracking, reservations, fines, notices, help desk, and admin records.</p>
+</section>
+
+<section class="section">
+    <div class="service-grid">
+        <article class="service-card">
+            <span class="service-icon">BK</span>
+            <h3>Book Catalog</h3>
+            <p>{{ total_books }} active books, {{ available_books }} currently available for members.</p>
+            <a class="button secondary" href="{% url 'books' %}">Browse Books</a>
+        </article>
+        <article class="service-card">
+            <span class="service-icon">ST</span>
+            <h3>Study Seat Booking</h3>
+            <p>{{ available_seats }} seats available. Members can choose a plan and book a seat.</p>
+            <a class="button secondary" href="{% url 'study_center' %}#seats">Book Seat</a>
+        </article>
+        <article class="service-card">
+            <span class="service-icon">FC</span>
+            <h3>Facilities</h3>
+            <p>{{ facilities_count }} active facilities with detail pages and working actions.</p>
+            <a class="button secondary" href="{% url 'facilities' %}">View Facilities</a>
+        </article>
+        <article class="service-card">
+            <span class="service-icon">MB</span>
+            <h3>Member Dashboard</h3>
+            <p>Members can track loans, reservations, profile details, and seat bookings.</p>
+            {% if user.is_authenticated %}
+                <a class="button secondary" href="{% url 'dashboard' %}">Open Dashboard</a>
+            {% else %}
+                <a class="button secondary" href="{% url 'login' %}">Member Login</a>
+            {% endif %}
+        </article>
+        <article class="service-card">
+            <span class="service-icon">HD</span>
+            <h3>Help Desk</h3>
+            <p>Contact messages are saved in the database and visible in Django admin.</p>
+            <a class="button secondary" href="{% url 'contact' %}">Send Message</a>
+        </article>
+        <article class="service-card">
+            <span class="service-icon">AD</span>
+            <h3>Admin Records</h3>
+            <p>Staff can manage books, facilities, plans, notices, contacts, users, loans, and bookings.</p>
+            <a class="button secondary" href="/admin/">Open Admin</a>
+        </article>
+    </div>
+</section>
+
+<section class="plans-band">
+    <div>
+        <p class="eyebrow">Plans</p>
+        <h2>Sell study plans from the website</h2>
+        <p>Plan cards are database-driven and connect directly to seat booking.</p>
+    </div>
+    <div class="plan-grid">
+        {% for plan in plans %}
+            <article class="plan-card {% if plan.is_featured %}featured{% endif %}">
+                <h3>{{ plan.name }}</h3>
+                <strong>Rs {{ plan.price }}</strong>
+                <p>{{ plan.duration }} &middot; {{ plan.description }}</p>
+                <a class="button secondary" href="{% url 'study_center' %}#seats">Book Seat</a>
+            </article>
+        {% empty %}
+            <article class="plan-card featured">
+                <h3>Plans not added</h3>
+                <strong>Admin</strong>
+                <p>Add study plans from Django admin to publish them here.</p>
+            </article>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

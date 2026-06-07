@@ -1,0 +1,127 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | My Library{% endblock %}
+
+{% block content %}
+<section class="library-page">
+    <div class="library-heading">
+        <div>
+            <p class="eyebrow">Member area</p>
+            <h1>My Library</h1>
+            <p>Issued books, due dates, fine status, aur reservations yahan manage karo.</p>
+        </div>
+        <a class="button primary" href="{% url 'books' %}">Browse Books</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="form-message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <section class="library-panel">
+        <div class="panel-heading">
+            <h2>Study seat admissions</h2>
+            <span>{{ seat_bookings|length }} active</span>
+        </div>
+        <div class="record-list">
+            {% for booking in seat_bookings %}
+                <article class="record-row">
+                    <div>
+                        <h3>{{ booking.display_student_name }} &middot; Seat {{ booking.seat.seat_number }}</h3>
+                        <p>
+                            Joined {{ booking.start_date|date:"M d, Y" }}
+                            &middot; Ends {{ booking.end_date|date:"M d, Y" }}
+                            &middot; {{ booking.days_remaining }} days left
+                        </p>
+                        <p>{{ booking.plan.name|default:"Study plan" }}{% if booking.contact_phone %} &middot; {{ booking.contact_phone }}{% endif %}</p>
+                        <p>Admission {{ booking.admission_number|default:"Pending" }} &middot; {{ booking.get_payment_status_display }} &middot; Balance Rs {{ booking.balance_amount }}</p>
+                    </div>
+                    <div class="row-actions">
+                        {% if booking.is_month_end_near %}
+                            <span class="status-pill waiting">{{ booking.alert_label }}</span>
+                        {% else %}
+                            <span class="status-pill available">{{ booking.alert_label }}</span>
+                        {% endif %}
+                        <a class="button secondary" href="{% url 'seat_booking_detail' booking.id %}">Admission Card</a>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">Abhi koi active study seat admission nahi hai.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="library-panel">
+        <div class="panel-heading">
+            <h2>Active loans</h2>
+            <span>{{ active_loans|length }} issued</span>
+        </div>
+        <div class="record-list">
+            {% for loan in active_loans %}
+                <article class="record-row">
+                    <div>
+                        <h3>{{ loan.book.title }}</h3>
+                        <p>by {{ loan.book.author.name }} &middot; Due {{ loan.due_at|date:"M d, Y" }}</p>
+                    </div>
+                    <div class="row-actions">
+                        {% if loan.is_overdue %}
+                            <span class="status-pill waiting">Overdue</span>
+                        {% else %}
+                            <span class="status-pill available">On time</span>
+                        {% endif %}
+                        <form method="post" action="{% url 'return_book' loan.id %}">
+                            {% csrf_token %}
+                            <button class="button secondary" type="submit">Return</button>
+                        </form>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">Abhi koi active issued book nahi hai.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="library-panel">
+        <div class="panel-heading">
+            <h2>Reservations</h2>
+            <span>{{ reservations|length }} active</span>
+        </div>
+        <div class="record-list">
+            {% for reservation in reservations %}
+                <article class="record-row">
+                    <div>
+                        <h3>{{ reservation.book.title }}</h3>
+                        <p>by {{ reservation.book.author.name }} &middot; Reserved {{ reservation.created_at|date:"M d, Y" }}</p>
+                    </div>
+                    <form method="post" action="{% url 'cancel_reservation' reservation.id %}">
+                        {% csrf_token %}
+                        <button class="button secondary" type="submit">Cancel</button>
+                    </form>
+                </article>
+            {% empty %}
+                <p class="muted">Abhi koi active reservation nahi hai.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="library-panel">
+        <div class="panel-heading">
+            <h2>History</h2>
+            <span>Last 10</span>
+        </div>
+        <div class="record-list">
+            {% for loan in loan_history %}
+                <article class="record-row">
+                    <div>
+                        <h3>{{ loan.book.title }}</h3>
+                        <p>{{ loan.get_status_display }} &middot; Fine Rs {{ loan.fine_amount }}</p>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">History empty hai.</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

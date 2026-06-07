@@ -1,0 +1,79 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Support{% endblock %}
+
+{% block content %}
+<section class="support-shell">
+    <div class="owner-profile-card">
+        <div class="owner-photo-frame">
+            {% if profile.owner_photo %}
+                <img src="{{ profile.owner_photo.url }}" alt="{{ profile.owner_name }} photo">
+            {% else %}
+                <span>{{ profile.owner_name|default:"Owner"|slice:":1" }}</span>
+            {% endif %}
+        </div>
+        <p class="eyebrow">Owner</p>
+        <h1>{{ profile.owner_name|default:"Sumit Kumar Patel" }}</h1>
+        <p>{{ profile.support_note|default:"Admission, payment, seat booking, books, and member support ke liye contact karein." }}</p>
+        <div class="hero-actions">
+            <a class="button primary" href="tel:{{ profile.support_phone|default:'08429395336' }}">Call Support</a>
+            <a class="button secondary" href="https://wa.me/{{ profile.whatsapp|default:profile.support_phone|default:'08429395336' }}" target="_blank" rel="noopener">WhatsApp</a>
+        </div>
+    </div>
+
+    <aside class="library-panel support-panel">
+        <div class="panel-heading">
+            <h2>Help line</h2>
+            <span>Active</span>
+        </div>
+        <div class="record-list">
+            <article class="record-row">
+                <div>
+                    <h3>Support number</h3>
+                    <p>{{ profile.support_phone|default:"08429395336" }}</p>
+                </div>
+            </article>
+            <article class="record-row">
+                <div>
+                    <h3>Helpline</h3>
+                    <p>{{ profile.helpline_phone|default:"08429395336" }}</p>
+                </div>
+            </article>
+            <article class="record-row">
+                <div>
+                    <h3>Address</h3>
+                    <p>{{ profile.address|default:"Address admin panel se update karein." }}</p>
+                </div>
+            </article>
+        </div>
+        <div class="book-actions">
+            <a class="button secondary" href="{% url 'contact' %}">Send Message</a>
+            {% if profile.google_maps_url %}
+                <a class="button secondary" href="{{ profile.google_maps_url }}" target="_blank" rel="noopener">Google Maps</a>
+            {% endif %}
+        </div>
+    </aside>
+</section>
+
+<section class="library-page">
+    <section class="library-panel payment-help-panel">
+        <div class="panel-heading">
+            <h2>Payment support</h2>
+            <span>{{ profile.upi_id|default:"UPI not added" }}</span>
+        </div>
+        <div class="payment-help-grid">
+            <div>
+                <p class="muted">{{ profile.payment_note|default:"QR code admin panel se upload karein. Student admission form me payment proof upload kar sakta hai." }}</p>
+                <a class="button primary" href="{% url 'study_center' %}#seats">Start Admission</a>
+            </div>
+            <div class="qr-preview">
+                {% if profile.payment_qr %}
+                    <img src="{{ profile.payment_qr.url }}" alt="Payment QR code">
+                {% else %}
+                    <span>QR</span>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | {{ facility.name }}{% endblock %}
+
+{% block content %}
+<section class="facility-detail-shell">
+    <div class="facility-detail-hero">
+        <span class="service-icon">{{ facility.icon_label|default:"FT" }}</span>
+        <p class="eyebrow">Facility</p>
+        <h1>{{ facility.name }}</h1>
+        <p>{{ facility.description|default:"This facility is active and managed from the admin panel." }}</p>
+        <div class="hero-actions">
+            <a class="button primary" href="{{ action.url }}">{{ action.label }}</a>
+            <a class="button secondary" href="{% url 'facilities' %}">All Facilities</a>
+        </div>
+    </div>
+
+    <aside class="library-panel facility-action-panel">
+        <div class="panel-heading">
+            <h2>How it works</h2>
+            <span>Active</span>
+        </div>
+        <div class="record-list">
+            <article class="record-row">
+                <div>
+                    <h3>Member action</h3>
+                    <p>Visitor can open this facility and continue to the right workflow.</p>
+                </div>
+            </article>
+            <article class="record-row">
+                <div>
+                    <h3>Admin managed</h3>
+                    <p>Name, description, order, and active status are controlled from Django admin.</p>
+                </div>
+            </article>
+            <article class="record-row">
+                <div>
+                    <h3>Live availability</h3>
+                    <p>{{ available_seats }} study seats currently available for booking.</p>
+                </div>
+            </article>
+        </div>
+    </aside>
+</section>
+
+<section class="section">
+    <div class="section-heading">
+        <div>
+            <p class="eyebrow">More facilities</p>
+            <h2>Continue exploring</h2>
+        </div>
+        <a class="button secondary" href="{% url 'study_center' %}">Study Center</a>
+    </div>
+    <div class="service-grid">
+        {% for item in related_cards %}
+            <a class="service-card service-link-card" href="{% url 'facility_detail' item.facility.id %}">
+                <span class="service-icon">{{ item.facility.icon_label|default:forloop.counter }}</span>
+                <h3>{{ item.facility.name }}</h3>
+                <p>{{ item.facility.description }}</p>
+                <strong>{{ item.action.label }}</strong>
+            </a>
+        {% empty %}
+            <p class="muted">More facilities admin panel se add kar sakte ho.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

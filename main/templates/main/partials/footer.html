@@ -1,0 +1,11 @@
+<footer class="site-footer">
+    <div>
+        <strong>Hiti Library and Study Center</strong>
+        <p>Books, members, issues, returns, reservations, and library records.</p>
+    </div>
+    {% if user.is_authenticated %}
+        <a href="{% url 'dashboard' %}">Open Dashboard</a>
+    {% else %}
+        <a href="{% url 'signup' %}">Create Account</a>
+    {% endif %}
+</footer>

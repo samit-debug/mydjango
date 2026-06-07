@@ -1,0 +1,86 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Admission {{ booking.admission_number }}{% endblock %}
+
+{% block content %}
+<section class="seat-admission-detail">
+    <div class="admission-card">
+        <div class="student-photo-frame">
+            {% if booking.student_photo %}
+                <img src="{{ booking.student_photo.url }}" alt="{{ booking.display_student_name }} photo">
+            {% else %}
+                <span>{{ booking.display_student_name|slice:":1" }}</span>
+            {% endif %}
+        </div>
+        <div>
+            <p class="eyebrow">Admission card</p>
+            <h1>{{ booking.display_student_name }}</h1>
+            <p>Admission {{ booking.admission_number|default:"Pending" }} &middot; Seat {{ booking.seat.seat_number }} &middot; {{ booking.seat.section }}</p>
+            <div class="book-actions">
+                <a class="button primary" href="{% url 'study_center' %}">Study Center</a>
+                {% if user.is_staff %}
+                    <a class="button secondary" href="{% url 'seat_admissions' %}">Admissions Admin</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="book-facts admission-facts">
+        <span><strong>Join date</strong>{{ booking.start_date|date:"M d, Y" }}</span>
+        <span><strong>Month ends</strong>{{ booking.end_date|date:"M d, Y" }}</span>
+        <span><strong>Days left</strong>{{ booking.days_remaining }}</span>
+        <span><strong>Status</strong>{{ booking.alert_label }}</span>
+        <span><strong>Plan</strong>{{ booking.plan.name|default:"Study plan" }}</span>
+        <span><strong>Monthly fee</strong>Rs {{ booking.monthly_fee }}</span>
+        <span><strong>Paid</strong>Rs {{ booking.amount_paid }}</span>
+        <span><strong>Balance</strong>Rs {{ booking.balance_amount }}</span>
+    </div>
+
+    <div class="dashboard-columns">
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>Student details</h2>
+                <span>{{ booking.get_payment_status_display }}</span>
+            </div>
+            <div class="record-list">
+                <article class="record-row">
+                    <div>
+                        <h3>Contact</h3>
+                        <p>{{ booking.student_phone|default:"Phone not added" }}{% if booking.student_email %} &middot; {{ booking.student_email }}{% endif %}</p>
+                    </div>
+                </article>
+                <article class="record-row">
+                    <div>
+                        <h3>Guardian</h3>
+                        <p>{{ booking.guardian_name|default:"Not added" }}{% if booking.guardian_phone %} &middot; {{ booking.guardian_phone }}{% endif %}</p>
+                    </div>
+                </article>
+                <article class="record-row">
+                    <div>
+                        <h3>Address</h3>
+                        <p>{{ booking.address|default:"Address not added" }}</p>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>Admin note</h2>
+                <span>{{ booking.get_status_display }}</span>
+            </div>
+            <p class="muted">{{ booking.admission_note|default:"No admin note added." }}</p>
+            {% if user.is_staff %}
+                <div class="book-actions">
+                    <a class="button secondary" href="/admin/main/seatbooking/{{ booking.id }}/change/">Edit in Admin</a>
+                    <form method="post" action="{% url 'extend_seat_booking' booking.id %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="days" value="30">
+                        <button class="button primary" type="submit">Extend 30 Days</button>
+                    </form>
+                </div>
+            {% endif %}
+        </section>
+    </div>
+</section>
+{% endblock %}

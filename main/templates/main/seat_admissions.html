@@ -1,0 +1,136 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Seat Admissions Admin{% endblock %}
+
+{% block content %}
+<section class="library-page">
+    <div class="library-heading">
+        <div>
+            <p class="eyebrow">Admin</p>
+            <h1>Seat admissions</h1>
+            <p>Students ke details, seat number, join date, month completion, monthly alerts, aur extensions yahan handle karo.</p>
+        </div>
+        <a class="button primary" href="/admin/main/seatbooking/">Django Admin</a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="form-message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <div class="facility-stats">
+        <article>
+            <strong>{{ active_count }}</strong>
+            <span>active admissions</span>
+        </article>
+        <article>
+            <strong>{{ pending_count }}</strong>
+            <span>pending approvals</span>
+        </article>
+        <article>
+            <strong>{{ due_count }}</strong>
+            <span>monthly alerts due</span>
+        </article>
+        <article>
+            <strong>{{ available_seats }}</strong>
+            <span>available seats</span>
+        </article>
+    </div>
+
+    <div class="library-dashboard-actions">
+        <a class="button secondary" href="{% url 'seat_admissions' %}?status=pending">Pending</a>
+        <a class="button secondary" href="{% url 'seat_admissions' %}?status=active">Active</a>
+        <a class="button secondary" href="{% url 'seat_admissions' %}?status=due">Alert Due</a>
+        <a class="button secondary" href="{% url 'seat_admissions' %}?status=expired">Expired</a>
+        <a class="button secondary" href="{% url 'seat_admissions' %}?status=rejected">Rejected</a>
+        <a class="button secondary" href="{% url 'seat_admissions' %}?status=completed">Completed</a>
+        <a class="button secondary" href="{% url 'seat_setup' %}">Auto Create Seats</a>
+        <a class="button secondary" href="{% url 'study_center' %}#seats">Add Admission</a>
+    </div>
+
+    <section class="library-panel">
+        <div class="panel-heading">
+            <h2>Student records</h2>
+            <span>{{ bookings|length }} shown</span>
+        </div>
+        <div class="record-list">
+            {% for booking in bookings %}
+                <article class="record-row admission-row">
+                    <div class="student-mini-photo">
+                        {% if booking.student_photo %}
+                            <img src="{{ booking.student_photo.url }}" alt="{{ booking.display_student_name }} photo">
+                        {% else %}
+                            <span>{{ booking.display_student_name|slice:":1" }}</span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <h3>{{ booking.display_student_name }} &middot; Seat {{ booking.seat.seat_number }}</h3>
+                        <p>
+                            {{ booking.seat.section }}
+                            &middot; Joined {{ booking.start_date|date:"M d, Y" }}
+                            &middot; Ends {{ booking.end_date|date:"M d, Y" }}
+                            &middot; {{ booking.days_remaining }} days left
+                        </p>
+                        <p>
+                            {{ booking.plan.name|default:"Study plan" }}
+                            &middot; {{ booking.get_status_display }}
+                            &middot; {{ booking.get_payment_status_display }}
+                            &middot; Balance Rs {{ booking.balance_amount }}
+                            {% if booking.student_phone %}&middot; Student {{ booking.student_phone }}{% endif %}
+                            {% if booking.guardian_phone %}&middot; Guardian {{ booking.guardian_phone }}{% endif %}
+                        </p>
+                        {% if booking.address %}
+                            <p>{{ booking.address }}</p>
+                        {% endif %}
+                        {% if booking.payment_reference %}
+                            <p>Payment ref: {{ booking.payment_reference }}</p>
+                        {% endif %}
+                        {% if booking.payment_proof %}
+                            <p><a href="{{ booking.payment_proof.url }}" target="_blank" rel="noopener">View payment proof</a></p>
+                        {% endif %}
+                    </div>
+                    <div class="row-actions admission-actions">
+                        {% if booking.is_month_end_near %}
+                            <span class="status-pill waiting">{{ booking.alert_label }}</span>
+                        {% else %}
+                            <span class="status-pill available">{{ booking.alert_label }}</span>
+                        {% endif %}
+
+                        {% if booking.contact_phone %}
+                            <a class="button secondary" href="tel:{{ booking.contact_phone }}">Call</a>
+                            <a class="button secondary" href="https://wa.me/{{ booking.contact_phone }}" target="_blank" rel="noopener">WhatsApp</a>
+                        {% endif %}
+
+                        <a class="button secondary" href="{% url 'seat_booking_detail' booking.id %}">Card</a>
+
+                        {% if booking.status == 'pending' %}
+                            <form method="post" action="{% url 'approve_seat_booking' booking.id %}">
+                                {% csrf_token %}
+                                <button class="button primary" type="submit">Approve</button>
+                            </form>
+                            <form method="post" action="{% url 'reject_seat_booking' booking.id %}">
+                                {% csrf_token %}
+                                <button class="button secondary" type="submit">Reject</button>
+                            </form>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'mark_seat_alert_sent' booking.id %}">
+                            {% csrf_token %}
+                            <button class="button secondary" type="submit">Alert Sent</button>
+                        </form>
+
+                        <form method="post" action="{% url 'extend_seat_booking' booking.id %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="days" value="30">
+                            <button class="button primary" type="submit">Extend 30 Days</button>
+                        </form>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">Is filter mein koi admission record nahi hai.</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

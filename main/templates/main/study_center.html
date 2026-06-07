@@ -1,0 +1,147 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Study Center{% endblock %}
+
+{% block content %}
+<section class="library-page">
+    <div class="library-heading">
+        <div>
+            <p class="eyebrow">Study center</p>
+            <h1>Study seats and facilities</h1>
+            <p>{{ profile.opening_hours|default:"Focused study environment with member seat booking." }}</p>
+        </div>
+        {% if user.is_authenticated %}
+            <div class="library-dashboard-actions">
+                <a class="button primary" href="{% url 'dashboard' %}">Dashboard</a>
+                {% if user.is_staff %}
+                    <a class="button secondary" href="{% url 'seat_admissions' %}">Admissions Admin</a>
+                {% endif %}
+            </div>
+        {% else %}
+            <a class="button primary" href="{% url 'signup' %}">Join Now</a>
+        {% endif %}
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="form-message {{ message.tags }}">{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    {% if user_booking %}
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>Your active seat</h2>
+                <span>{{ user_booking.end_date|date:"M d, Y" }}</span>
+            </div>
+            <article class="record-row">
+                <div>
+                    <h3>{{ user_booking.display_student_name }} &middot; Seat {{ user_booking.seat.seat_number }}</h3>
+                    <p>
+                        Joined {{ user_booking.start_date|date:"M d, Y" }}
+                        &middot; Ends {{ user_booking.end_date|date:"M d, Y" }}
+                        &middot; {{ user_booking.days_remaining }} days left
+                    </p>
+                    <p>
+                        {{ user_booking.plan.name|default:"Study plan" }}
+                        {% if user_booking.contact_phone %}&middot; {{ user_booking.contact_phone }}{% endif %}
+                    </p>
+                </div>
+                <div class="row-actions">
+                    {% if user_booking.is_month_end_near %}
+                        <span class="status-pill waiting">{{ user_booking.alert_label }}</span>
+                    {% else %}
+                        <span class="status-pill available">{{ user_booking.alert_label }}</span>
+                    {% endif %}
+                    <form method="post" action="{% url 'cancel_study_booking' user_booking.id %}">
+                        {% csrf_token %}
+                        <button class="button secondary" type="submit">Cancel Booking</button>
+                    </form>
+                    <a class="button secondary" href="{% url 'seat_booking_detail' user_booking.id %}">Admission Card</a>
+                </div>
+            </article>
+        </section>
+    {% endif %}
+
+    <section class="library-panel" id="plans">
+        <div class="panel-heading">
+            <h2>Available plans</h2>
+            <span>{{ plans|length }} plans</span>
+        </div>
+        <div class="plan-grid">
+            {% for plan in plans %}
+                <article class="plan-card {% if plan.is_featured %}featured{% endif %}">
+                    <h3>{{ plan.name }}</h3>
+                    <strong>Rs {{ plan.price }}</strong>
+                    <p>{{ plan.duration }} &middot; {{ plan.description }}</p>
+                    <a class="button secondary" href="#seats">Choose Seat</a>
+                </article>
+            {% empty %}
+                <p class="muted">Study plans admin panel se add karo.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="library-panel" id="seats">
+        <div class="panel-heading">
+            <h2>Seat availability</h2>
+            {% if user.is_staff %}
+                <a href="{% url 'seat_setup' %}">Auto create seats</a>
+            {% else %}
+                <span>{{ seats|length }} seats</span>
+            {% endif %}
+        </div>
+        <div class="facility-stats">
+            {% for item in section_stats %}
+                <article>
+                    <strong>{{ item.available }}</strong>
+                    <span>{{ item.section }} available of {{ item.total }}</span>
+                </article>
+            {% endfor %}
+        </div>
+        <div class="seat-grid">
+            {% for seat in seats %}
+                <article class="seat-card">
+                    <div>
+                        <h3>{{ seat.seat_number }}</h3>
+                        <p>{{ seat.section }}</p>
+                    </div>
+                    {% if seat.id in active_booked_seats %}
+                        <span class="status-pill waiting">Booked</span>
+                    {% else %}
+                        <span class="status-pill available">Available</span>
+                        {% if user.is_authenticated and not user_booking %}
+                            <a class="button secondary" href="{% url 'seat_admission' seat.id %}">Admission Form</a>
+                        {% elif user.is_authenticated %}
+                            <span class="muted">One booking active</span>
+                        {% else %}
+                            <a class="button secondary" href="{% url 'login' %}?next={{ request.path }}">Log in to Book</a>
+                        {% endif %}
+                    {% endif %}
+                </article>
+            {% empty %}
+                <p class="muted">Study seats admin panel se add karo.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="library-panel" id="facilities">
+        <div class="panel-heading">
+            <h2>Facilities</h2>
+            <a href="{% url 'facilities' %}">View all</a>
+        </div>
+        <div class="service-grid">
+            {% for item in facility_cards %}
+                <a class="service-card service-link-card" href="{% url 'facility_detail' item.facility.id %}">
+                    <span class="service-icon">{{ item.facility.icon_label|default:forloop.counter }}</span>
+                    <h3>{{ item.facility.name }}</h3>
+                    <p>{{ item.facility.description }}</p>
+                    <strong>{{ item.action.label }}</strong>
+                </a>
+            {% empty %}
+                <p class="muted">Study facilities admin panel se add karo.</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

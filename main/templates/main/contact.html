@@ -1,0 +1,61 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Help{% endblock %}
+
+{% block content %}
+<section class="contact-section">
+    <div>
+        <p class="eyebrow">Help desk</p>
+        <h1>Ask librarian</h1>
+        <p>Book availability, membership, fine, return, ya reservation ke liye message bhejo.</p>
+        <div class="contact-details">
+            <p><strong>Timing:</strong> {{ profile.opening_hours|default:"Open daily for focused study" }}</p>
+            {% if profile.phone %}
+                <p><strong>Phone:</strong> <a href="tel:{{ profile.phone }}">{{ profile.phone }}</a></p>
+            {% endif %}
+            {% if profile.whatsapp %}
+                <p><strong>WhatsApp:</strong> <a href="https://wa.me/{{ profile.whatsapp }}" target="_blank" rel="noopener">{{ profile.whatsapp }}</a></p>
+            {% endif %}
+            {% if profile.email %}
+                <p><strong>Email:</strong> <a href="mailto:{{ profile.email }}">{{ profile.email }}</a></p>
+            {% endif %}
+            {% if profile.google_maps_url %}
+                <a class="button secondary" href="{{ profile.google_maps_url }}" target="_blank" rel="noopener">Open Google Maps</a>
+            {% endif %}
+        </div>
+    </div>
+    <form class="contact-form" method="post">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="form-message">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% if form.non_field_errors %}
+            <p class="form-message error">{{ form.non_field_errors|join:", " }}</p>
+        {% endif %}
+        <label>
+            Name
+            {{ form.name }}
+            {% for error in form.name.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <label>
+            Email
+            {{ form.email }}
+            {% for error in form.email.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <label>
+            Message
+            {{ form.message }}
+            {% for error in form.message.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <button type="submit">Send Request</button>
+    </form>
+</section>
+{% endblock %}

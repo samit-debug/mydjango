@@ -1,0 +1,37 @@
+from django.urls import path
+
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'),
+    path('about/', views.about, name='about'),
+    path('services/', views.services, name='services'),
+    path('facilities/', views.facilities, name='facilities'),
+    path('facilities/<int:facility_id>/', views.facility_detail, name='facility_detail'),
+    path('support/', views.support, name='support'),
+    path('contact/', views.contact, name='contact'),
+    path('login/', views.login, name='login'),
+    path('signup/', views.signup, name='signup'),
+    path('logout/', views.logout, name='logout'),
+    path('owner/', views.owner_dashboard, name='owner_dashboard'),
+    path('dashboard/', views.dashboard, name='dashboard'),
+    path('study-center/', views.study_center, name='study_center'),
+    path('study-center/seat-setup/', views.seat_setup, name='seat_setup'),
+    path('study-center/admissions/', views.seat_admissions, name='seat_admissions'),
+    path('study-center/admissions/<int:booking_id>/approve/', views.approve_seat_booking, name='approve_seat_booking'),
+    path('study-center/admissions/<int:booking_id>/reject/', views.reject_seat_booking, name='reject_seat_booking'),
+    path('study-center/admissions/<int:booking_id>/alert-sent/', views.mark_seat_alert_sent, name='mark_seat_alert_sent'),
+    path('study-center/admissions/<int:booking_id>/extend/', views.extend_seat_booking, name='extend_seat_booking'),
+    path('study-center/seats/<int:seat_id>/admission/', views.seat_admission, name='seat_admission'),
+    path('study-center/seats/<int:seat_id>/book/', views.book_study_seat, name='book_study_seat'),
+    path('study-center/bookings/<int:booking_id>/', views.seat_booking_detail, name='seat_booking_detail'),
+    path('study-center/bookings/<int:booking_id>/cancel/', views.cancel_study_booking, name='cancel_study_booking'),
+    path('books/', views.book_list, name='books'),
+    path('books/<int:book_id>/', views.book_detail, name='book_detail'),
+    path('books/<int:book_id>/borrow/', views.borrow_book, name='borrow_book'),
+    path('books/<int:book_id>/reserve/', views.reserve_book, name='reserve_book'),
+    path('loans/<int:loan_id>/return/', views.return_book, name='return_book'),
+    path('reservations/<int:reservation_id>/cancel/', views.cancel_reservation, name='cancel_reservation'),
+    path('my-library/', views.my_library, name='my_library'),
+    path('profile/', views.profile, name='profile'),
+]

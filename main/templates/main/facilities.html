@@ -1,0 +1,47 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Facilities{% endblock %}
+
+{% block content %}
+<section class="library-page">
+    <div class="library-heading">
+        <div>
+            <p class="eyebrow">Facilities</p>
+            <h1>Study center facilities</h1>
+            <p>{{ profile.description|default:"Every facility is connected with a real website action: seat booking, books, member dashboard, or help desk." }}</p>
+        </div>
+        <a class="button primary" href="{% url 'study_center' %}#seats">Book Study Seat</a>
+    </div>
+
+    <div class="facility-stats">
+        <article>
+            <strong>{{ facility_cards|length }}</strong>
+            <span>active facilities</span>
+        </article>
+        <article>
+            <strong>{{ available_seats }}</strong>
+            <span>seats available</span>
+        </article>
+        <article>
+            <strong>{{ plans|length }}</strong>
+            <span>study plans</span>
+        </article>
+    </div>
+
+    <div class="service-grid">
+        {% for item in facility_cards %}
+            <a class="service-card service-link-card" href="{% url 'facility_detail' item.facility.id %}">
+                <span class="service-icon">{{ item.facility.icon_label|default:forloop.counter }}</span>
+                <h3>{{ item.facility.name }}</h3>
+                <p>{{ item.facility.description|default:"Facility details can be managed from Django admin." }}</p>
+                <strong>{{ item.action.label }}</strong>
+            </a>
+        {% empty %}
+            <div class="empty-state">
+                <h2>No facilities added</h2>
+                <p>Admin panel se facilities add karo, website automatically update ho jayegi.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Dashboard{% endblock %}
+
+{% block content %}
+<section class="dashboard-shell">
+    <div class="dashboard-hero">
+        <p class="eyebrow">Dashboard</p>
+        <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
+        <p>Library activity, issued books, due dates, reservations, aur notices yahan se track karo.</p>
+    </div>
+    <div class="dashboard-grid metric-grid">
+        <article>
+            <span>01</span>
+            <h3>Total Books</h3>
+            <p>{{ total_books }} books catalog me active hain.</p>
+        </article>
+        <article>
+            <span>02</span>
+            <h3>Available Now</h3>
+            <p>{{ available_books }} books abhi borrow ke liye available hain.</p>
+        </article>
+        <article>
+            <span>03</span>
+            <h3>Your Loans</h3>
+            <p>{{ active_loans }} active loan, {{ overdue_count }} overdue, {{ seat_bookings_count }} seat booking.</p>
+        </article>
+    </div>
+    <div class="library-dashboard-actions">
+        <a class="button primary" href="{% url 'books' %}">Browse Books</a>
+        <a class="button secondary" href="{% url 'study_center' %}">Study Seats</a>
+        <a class="button secondary" href="{% url 'my_library' %}">My Library</a>
+        <a class="button secondary" href="{% url 'profile' %}">Profile</a>
+        {% if user.is_staff %}
+            <a class="button secondary" href="{% url 'seat_admissions' %}">Admissions Admin ({{ seat_alerts_due_count }})</a>
+        {% endif %}
+    </div>
+
+    {% if current_seat %}
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>Current study seat</h2>
+                <span>{{ current_seat.alert_label }}</span>
+            </div>
+            <article class="record-row">
+                <div>
+                    <h3>{{ current_seat.display_student_name }} &middot; Seat {{ current_seat.seat.seat_number }}</h3>
+                    <p>
+                        Joined {{ current_seat.start_date|date:"M d, Y" }}
+                        &middot; Ends {{ current_seat.end_date|date:"M d, Y" }}
+                        &middot; {{ current_seat.days_remaining }} days left
+                    </p>
+                    <p>{{ current_seat.plan.name|default:"Study plan" }}</p>
+                </div>
+                <a class="button secondary" href="{% url 'seat_booking_detail' current_seat.id %}">Admission Card</a>
+            </article>
+        </section>
+    {% endif %}
+
+    <div class="dashboard-columns">
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>New books</h2>
+                <a href="{% url 'books' %}">View all</a>
+            </div>
+            <div class="record-list">
+                {% for book in recent_books %}
+                    <article class="record-row">
+                        <div>
+                            <h3>{{ book.title }}</h3>
+                            <p>{{ book.author.name }} &middot; {{ book.category.name }}</p>
+                        </div>
+                        <a class="button secondary" href="{% url 'book_detail' book.id %}">Open</a>
+                    </article>
+                {% empty %}
+                    <p class="muted">Admin panel se books add karo.</p>
+                {% endfor %}
+            </div>
+        </section>
+        <section class="library-panel">
+            <div class="panel-heading">
+                <h2>Notices</h2>
+                <span>{{ reservations_count }} reservations</span>
+            </div>
+            <div class="record-list">
+                {% for notice in notices %}
+                    <article class="record-row">
+                        <div>
+                            <h3>{{ notice.title }}</h3>
+                            <p>{{ notice.body }}</p>
+                        </div>
+                    </article>
+                {% empty %}
+                    <p class="muted">Abhi koi active notice nahi hai.</p>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+</section>
+{% endblock %}

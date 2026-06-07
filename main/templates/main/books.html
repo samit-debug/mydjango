@@ -1,0 +1,67 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Books{% endblock %}
+
+{% block content %}
+<section class="library-page">
+    <div class="library-heading">
+        <div>
+            <p class="eyebrow">Catalog</p>
+            <h1>Find your next book</h1>
+            <p>Title, author, ISBN, category, ya publisher se search karo.</p>
+        </div>
+        <a class="button primary" href="{% url 'my_library' %}">My Library</a>
+    </div>
+
+    <form class="catalog-filter" method="get">
+        <input type="search" name="q" value="{{ query }}" placeholder="Search books, authors, ISBN">
+        <select name="category">
+            <option value="">All categories</option>
+            {% for category in categories %}
+                <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+            {% endfor %}
+        </select>
+        <select name="availability">
+            <option value="">Any status</option>
+            <option value="available" {% if availability == 'available' %}selected{% endif %}>Available</option>
+            <option value="borrowed" {% if availability == 'borrowed' %}selected{% endif %}>Currently borrowed</option>
+        </select>
+        <button class="button primary" type="submit">Search</button>
+    </form>
+
+    <div class="book-grid">
+        {% for book in books %}
+            <article class="book-card">
+                <div class="book-cover">
+                    {% if book.cover_url %}
+                        <img src="{{ book.cover_url }}" alt="{{ book.title }} cover">
+                    {% else %}
+                        <span>{{ book.title|slice:":1" }}</span>
+                    {% endif %}
+                </div>
+                <div class="book-card-body">
+                    <p class="book-meta">{{ book.category.name }} &middot; {{ book.language }}</p>
+                    <h3>{{ book.title }}</h3>
+                    <p>by {{ book.author.name }}</p>
+                    <div class="availability-row">
+                        {% if book.is_available %}
+                            <span class="status-pill available">Available</span>
+                        {% else %}
+                            <span class="status-pill waiting">Waitlist</span>
+                        {% endif %}
+                        <span>{{ book.available_copies }}/{{ book.total_copies }} copies</span>
+                    </div>
+                    <a class="button secondary" href="{% url 'book_detail' book.id %}">View Details</a>
+                </div>
+            </article>
+        {% empty %}
+            <div class="empty-state">
+                <h2>No books found</h2>
+                <p>Search clear karo ya admin panel se books add karo.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

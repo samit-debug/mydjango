@@ -1,0 +1,53 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Profile{% endblock %}
+
+{% block content %}
+<section class="profile-shell">
+    <div>
+        <p class="eyebrow">Member profile</p>
+        <h1>{{ profile.membership_id }}</h1>
+        <p>Profile details library records aur member communication ke liye use hoti hain.</p>
+    </div>
+    <form class="contact-form" method="post">
+        {% csrf_token %}
+        {% if messages %}
+            {% for message in messages %}
+                <p class="form-message {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        {% if form.non_field_errors %}
+            <p class="form-message error">{{ form.non_field_errors|join:", " }}</p>
+        {% endif %}
+        <label>
+            Full name
+            {{ form.full_name }}
+            {% for error in form.full_name.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <label>
+            Email
+            {{ form.email }}
+            {% for error in form.email.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <label>
+            Phone
+            {{ form.phone }}
+            {% for error in form.phone.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <label>
+            Address
+            {{ form.address }}
+            {% for error in form.address.errors %}
+                <span class="field-error">{{ error }}</span>
+            {% endfor %}
+        </label>
+        <button type="submit">Save Profile</button>
+    </form>
+</section>
+{% endblock %}

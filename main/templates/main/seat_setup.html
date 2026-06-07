@@ -1,0 +1,65 @@
+{% extends 'main/base.html' %}
+
+{% block title %}Hiti Library and Study Center | Seat Setup{% endblock %}
+
+{% block content %}
+<section class="profile-shell admission-shell">
+    <div>
+        <p class="eyebrow">Admin setup</p>
+        <h1>Auto create seats</h1>
+        <p>Section, prefix, start number, aur count daalo. System automatic seat numbers create karega, existing seats skip karega.</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p class="form-message {{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+        <div class="facility-stats compact-stats">
+            <article>
+                <strong>{{ total_seats }}</strong>
+                <span>total seats</span>
+            </article>
+            <article>
+                <strong>{{ available_seats }}</strong>
+                <span>available seats</span>
+            </article>
+        </div>
+    </div>
+
+    <form class="contact-form" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+            <label>
+                {{ field.label }}
+                {{ field }}
+                {% for error in field.errors %}
+                    <span class="field-error">{{ error }}</span>
+                {% endfor %}
+            </label>
+        {% endfor %}
+        <button type="submit">Create Seats</button>
+    </form>
+</section>
+
+<section class="library-page">
+    <section class="library-panel">
+        <div class="panel-heading">
+            <h2>Seat availability by section</h2>
+            <a href="{% url 'study_center' %}#seats">Open seats</a>
+        </div>
+        <div class="record-list">
+            {% for item in section_stats %}
+                <article class="record-row">
+                    <div>
+                        <h3>{{ item.section }}</h3>
+                        <p>{{ item.available }} available &middot; {{ item.booked }} booked &middot; {{ item.total }} total</p>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">Abhi seats create nahi hui hain.</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}
