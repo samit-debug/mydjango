@@ -41,7 +41,7 @@ load_env_file(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-u8_o*l%&m(hw2-x+6v%nq^ugwpkln7s@)_rt9l)ynkvy+3r5xv')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True').lower() in {'1', 'true', 'yes', 'on'}
+DEBUG = os.getenv('DEBUG', 'False').lower() in {'1', 'true', 'yes', 'on'}
 
 ALLOWED_HOSTS = [
     host.strip()
@@ -191,7 +191,8 @@ STATICFILES_STORAGE_BACKEND = os.getenv(
     'STATICFILES_STORAGE_BACKEND',
     'whitenoise.storage.CompressedStaticFilesStorage',
 )
-WHITENOISE_USE_FINDERS = os.getenv('WHITENOISE_USE_FINDERS', str(not DEBUG)).lower() in {'1', 'true', 'yes', 'on'}
+WHITENOISE_USE_FINDERS = os.getenv('WHITENOISE_USE_FINDERS', 'True').lower() in {'1', 'true', 'yes', 'on'}
+WHITENOISE_AUTOREFRESH = os.getenv('WHITENOISE_AUTOREFRESH', str(DEBUG)).lower() in {'1', 'true', 'yes', 'on'}
 
 STORAGES = {
     'default': {
