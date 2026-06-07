@@ -1,0 +1,43 @@
+services:
+  - type: web
+    name: hiti-library
+    runtime: python
+    buildCommand: bash build.sh
+    startCommand: gunicorn myproject.wsgi:application
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.14.3
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: mydjango-f5uc.onrender.com,hiti-library.onrender.com
+      - key: CSRF_TRUSTED_ORIGINS
+        value: https://mydjango-f5uc.onrender.com,https://hiti-library.onrender.com
+      - key: SECURE_SSL_REDIRECT
+        value: true
+      - key: SESSION_COOKIE_SECURE
+        value: true
+      - key: CSRF_COOKIE_SECURE
+        value: true
+      - key: SECURE_HSTS_SECONDS
+        value: 31536000
+      - key: SERVE_MEDIA_FILES
+        value: true
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: admin
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: owner@hiti-library.local
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hiti-library-db
+          property: connectionString
+
+databases:
+  - name: hiti-library-db
+    databaseName: hiti_library
+    user: hiti_library
